@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 
@@ -10,9 +10,15 @@ export default function Model(props) {
   const { nodes, materials, animations } = useGLTF("/heart.glb");
   const { actions } = useAnimations(animations, group);
   const [hover, setHover] = useState(false);
+  const [active, setActive] = useState(false);
   useFrame(() => {
     if (hover) {
       group.current.rotation.y += 0.05;
+    }
+    if (active) {
+      materials.Material.color.set(0xff0000);
+    } else {
+      materials.Material.color.set(0x770000);
     }
   });
   const onHover = () => {
@@ -20,6 +26,12 @@ export default function Model(props) {
   };
   const onMouseOut = () => {
     setHover(false);
+  };
+  const onMouseDown = () => {
+    setActive(true);
+  };
+  const onMouseUp = () => {
+    setActive(false);
   };
 
   return (
@@ -29,6 +41,8 @@ export default function Model(props) {
       dispose={null}
       onPointerOver={(e) => onHover(e)}
       onPointerLeave={(e) => onMouseOut(e)}
+      onPointerDown={(e) => onMouseDown(e)}
+      onPointerUp={(e) => onMouseUp(e)}
     >
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
