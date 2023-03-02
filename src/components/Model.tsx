@@ -1,15 +1,35 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 
 export default function Model(props) {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF("/heart.glb");
   const { actions } = useAnimations(animations, group);
+  const [hover, setHover] = useState(false);
+  useFrame(() => {
+    if (hover) {
+      group.current.rotation.y += 0.05;
+    }
+  });
+  const onHover = () => {
+    setHover(true);
+  };
+  const onMouseOut = () => {
+    setHover(false);
+  };
+
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group
+      ref={group}
+      {...props}
+      dispose={null}
+      onPointerOver={(e) => onHover(e)}
+      onPointerLeave={(e) => onMouseOut(e)}
+    >
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
           <group name="heart1fbx" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
